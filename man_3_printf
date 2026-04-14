@@ -1,0 +1,88 @@
+cat > man_3_printf << 'EOF'
+.TH _PRINTF 3 "April 2026" "Holberton School" "Library Functions Manual"
+.SH NAME
+_printf \- custom formatted output conversion
+.SH SYNOPSIS
+.B #include "main.h"
+.PP
+.BI "int _printf(const char *" format ", ...);"
+.SH DESCRIPTION
+The
+.B _printf()
+function produces output according to a
+.I format
+string. It writes output to
+.BR stdout ,
+the standard output stream.
+.PP
+The
+.I format
+string is composed of zero or more directives: ordinary characters (not
+.BR % ),
+which are copied unchanged to the output stream, and conversion
+specifications, each of which results in fetching zero or more subsequent
+arguments.
+.SS Conversion Specifiers
+.TP
+.B %c
+Prints a single character.
+.TP
+.B %s
+Prints a string of characters. If the argument is NULL, prints
+.IR (null) .
+.TP
+.B %d
+Prints a decimal integer.
+.TP
+.B %i
+Prints an integer in base 10.
+.TP
+.B %%
+Prints a literal
+.B %
+character.
+.SH RETURN VALUE
+On success,
+.B _printf()
+returns the number of characters printed (excluding the null byte used to end output to strings).
+.PP
+If
+.I format
+is NULL or ends with an unhandled
+.BR % ,
+.B \-1
+is returned.
+.SH EXAMPLES
+.PP
+Print a character:
+.PP
+.RS
+_printf("%c", 'A');
+.RE
+.PP
+Print a string:
+.PP
+.RS
+_printf("%s", "Hello, World");
+.RE
+.PP
+Print an integer:
+.PP
+.RS
+_printf("%d", 1024);
+.RE
+.PP
+Print a percent sign:
+.PP
+.RS
+_printf("100%%");
+.RE
+.SH SEE ALSO
+.BR printf (3),
+.BR write (2),
+.BR stdarg (3)
+.SH AUTHORS
+Written by Holberton School students.
+.SH BUGS
+Does not handle flag characters, field width, precision, or length modifiers.
+EOF
