@@ -2,11 +2,27 @@
 #include <stdarg.h>
 #include <unistd.h>
 
-/**
- * _printf - prints formatted output
- * @format: format string
- * Return: number of characters printed
- */
+int print_number(long int n)
+{
+	int count = 0;
+	char digit;
+	long int temp;
+
+	if (n < 0)
+	{
+		write(1, "-", 1);
+		count++;
+		n = -n;
+	}
+	if (n >= 10)
+		count += print_number(n / 10);
+	temp = n % 10;
+	digit = temp + '0';
+	write(1, &digit, 1);
+	count++;
+	return (count);
+}
+
 int _printf(const char *format, ...)
 {
 	int i = 0, count = 0, j;
@@ -15,21 +31,17 @@ int _printf(const char *format, ...)
 
 	if (format == NULL)
 		return (-1);
-
 	va_start(args, format);
-
 	while (format[i])
 	{
 		if (format[i] == '%')
 		{
 			i++;
-
 			if (format[i] == '\0')
 			{
 				va_end(args);
 				return (-1);
 			}
-
 			if (format[i] == 'c')
 			{
 				c = va_arg(args, int);
@@ -41,7 +53,6 @@ int _printf(const char *format, ...)
 				str = va_arg(args, char *);
 				if (str == NULL)
 					str = "(null)";
-
 				j = 0;
 				while (str[j])
 				{
@@ -54,6 +65,11 @@ int _printf(const char *format, ...)
 			{
 				write(1, "%", 1);
 				count++;
+			}
+			else if (format[i] == 'd' || format[i] == 'i')
+			{
+				int num = va_arg(args, int);
+				count += print_number((long int)num);
 			}
 			else
 			{
@@ -69,7 +85,6 @@ int _printf(const char *format, ...)
 		}
 		i++;
 	}
-
 	va_end(args);
 	return (count);
 }
