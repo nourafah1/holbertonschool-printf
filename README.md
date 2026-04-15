@@ -15,7 +15,7 @@ Clone the repository:
 git clone https://github.com/nourafah1/holbertonschool-printf.git
 cd holbertonschool-printf
 
-
+```bash
 ##Example 
 
 _printf("Hello %s\n", "World");
