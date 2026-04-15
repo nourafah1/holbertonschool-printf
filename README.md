@@ -15,16 +15,20 @@ Clone the repository:
 git clone https://github.com/nourafah1/holbertonschool-printf.git
 cd holbertonschool-printf
 
-```bash
+```
 ##Example 
-
+```c
 _printf("Hello %s\n", "World");
 _printf("Number: %d\n", 42);
 
+```
 
 ## Testing
-
+```bash
 ./printf
+
+```
+
 
 
 
