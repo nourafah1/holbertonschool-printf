@@ -44,6 +44,13 @@ int _printf(const char *format, ...)
 					str = "(null)";
 				print_string_buffer(str, buffer, &buf_index, &count);
 			}
+			else if (format[i] == 'S')
+			{
+				str = va_arg(args, char *);
+				if (str == NULL)
+					str = "(null)";
+				print_special_string(str, buffer, &buf_index, &count);
+			}
 			else if (format[i] == '%')
 			{
 				add_to_buffer(buffer, &buf_index, '%', &count);
