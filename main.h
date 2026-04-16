@@ -19,5 +19,6 @@ void print_unsigned_buffer(unsigned int n, char buffer[], int *index, int *count
 void print_octal_buffer(unsigned int n, char buffer[], int *index, int *count);
 void print_hex_buffer(unsigned int n, int uppercase, char buffer[],
 	int *index, int *count);
+void print_pointer_buffer(void *ptr, char buffer[], int *index, int *count);
 
 #endif

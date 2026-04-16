@@ -85,6 +85,11 @@ int _printf(const char *format, ...)
 				print_hex_buffer(va_arg(args, unsigned int), 1,
 					buffer, &buf_index, &count);
 			}
+			else if (format[i] == 'p')
+			{
+				print_pointer_buffer(va_arg(args, void *),
+					buffer, &buf_index, &count);
+			}
 			else
 			{
 				add_to_buffer(buffer, &buf_index, '%', &count);
