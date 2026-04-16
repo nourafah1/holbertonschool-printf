@@ -21,4 +21,11 @@ void print_hex_buffer(unsigned int n, int uppercase, char buffer[],
 	int *index, int *count);
 void print_pointer_buffer(void *ptr, char buffer[], int *index, int *count);
 
+void print_signed_flag(long int n, int plus_flag, int space_flag,
+	char buffer[], int *index, int *count);
+void print_hash_octal(unsigned int n, int hash_flag, char buffer[],
+	int *index, int *count);
+void print_hash_hex(unsigned int n, int hash_flag, int uppercase,
+	char buffer[], int *index, int *count);
+
 #endif

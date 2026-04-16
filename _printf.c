@@ -9,6 +9,7 @@
 int _printf(const char *format, ...)
 {
 	int i = 0, count = 0;
+	int plus_flag, space_flag, hash_flag;
 	char *str, c;
 	char buffer[1024];
 	int buf_index = 0;
@@ -23,7 +24,21 @@ int _printf(const char *format, ...)
 	{
 		if (format[i] == '%')
 		{
+			plus_flag = 0;
+			space_flag = 0;
+			hash_flag = 0;
 			i++;
+
+			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
+			{
+				if (format[i] == '+')
+					plus_flag = 1;
+				else if (format[i] == ' ')
+					space_flag = 1;
+				else if (format[i] == '#')
+					hash_flag = 1;
+				i++;
+			}
 
 			if (format[i] == '\0')
 			{
@@ -57,8 +72,8 @@ int _printf(const char *format, ...)
 			}
 			else if (format[i] == 'd' || format[i] == 'i')
 			{
-				print_number_buffer((long int)va_arg(args, int),
-					buffer, &buf_index, &count);
+				print_signed_flag((long int)va_arg(args, int), plus_flag,
+					space_flag, buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'b')
 			{
@@ -72,17 +87,17 @@ int _printf(const char *format, ...)
 			}
 			else if (format[i] == 'o')
 			{
-				print_octal_buffer(va_arg(args, unsigned int),
+				print_hash_octal(va_arg(args, unsigned int), hash_flag,
 					buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'x')
 			{
-				print_hex_buffer(va_arg(args, unsigned int), 0,
+				print_hash_hex(va_arg(args, unsigned int), hash_flag, 0,
 					buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'X')
 			{
-				print_hex_buffer(va_arg(args, unsigned int), 1,
+				print_hash_hex(va_arg(args, unsigned int), hash_flag, 1,
 					buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'p')
