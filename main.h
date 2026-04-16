@@ -28,4 +28,13 @@ void print_hash_octal(unsigned int n, int hash_flag, char buffer[],
 void print_hash_hex(unsigned int n, int hash_flag, int uppercase,
 	char buffer[], int *index, int *count);
 
+void print_unsigned_long_buffer(unsigned long int n, char buffer[],
+	int *index, int *count);
+void print_octal_long_buffer(unsigned long int n, char buffer[],
+	int *index, int *count);
+void print_hex_long_buffer(unsigned long int n, int uppercase, char buffer[],
+	int *index, int *count);
+void print_signed_modifier(long int n, int plus_flag, int space_flag,
+	char buffer[], int *index, int *count);
+
 #endif
