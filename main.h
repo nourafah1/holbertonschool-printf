@@ -5,9 +5,17 @@
 #include <unistd.h>
 
 int _printf(const char *format, ...);
-int print_number(long int n);
-int print_binary(unsigned int n);
-int print_unsigned(unsigned int n);
-int print_octal(unsigned int n);
-int print_hex(unsigned int n, int uppercase);
+
+void flush_buffer(char buffer[], int *index);
+void add_to_buffer(char buffer[], int *index, char c, int *count);
+void print_string_buffer(char *str, char buffer[], int *index, int *count);
+
+void print_number_buffer(long int n, char buffer[], int *index, int *count);
+void print_binary_buffer(unsigned int n, char buffer[], int *index, int *count);
+void print_unsigned_buffer(unsigned int n, char buffer[], int *index, int *count);
+
+void print_octal_buffer(unsigned int n, char buffer[], int *index, int *count);
+void print_hex_buffer(unsigned int n, int uppercase, char buffer[],
+	int *index, int *count);
+
 #endif
