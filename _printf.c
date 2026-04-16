@@ -21,7 +21,6 @@ int print_number(long int n)
 	}
 	if (n >= 10)
 		count += print_number(n / 10);
-
 	temp = n % 10;
 	digit = temp + '0';
 	write(1, &digit, 1);
@@ -42,8 +41,75 @@ int print_binary(unsigned int n)
 
 	if (n / 2)
 		count += print_binary(n / 2);
-
 	digit = (n % 2) + '0';
+	write(1, &digit, 1);
+	count++;
+
+	return (count);
+}
+
+/**
+ * print_unsigned - prints an unsigned integer
+ * @n: the number to print
+ * Return: number of characters printed
+ */
+int print_unsigned(unsigned int n)
+{
+	int count = 0;
+	char digit;
+
+	if (n / 10)
+		count += print_unsigned(n / 10);
+	digit = (n % 10) + '0';
+	write(1, &digit, 1);
+	count++;
+
+	return (count);
+}
+
+/**
+ * print_octal - prints an unsigned int in octal
+ * @n: the number to print
+ * Return: number of characters printed
+ */
+int print_octal(unsigned int n)
+{
+	int count = 0;
+	char digit;
+
+	if (n / 8)
+		count += print_octal(n / 8);
+	digit = (n % 8) + '0';
+	write(1, &digit, 1);
+	count++;
+
+	return (count);
+}
+
+/**
+ * print_hex - prints an unsigned int in hexadecimal
+ * @n: the number to print
+ * @uppercase: 1 for uppercase, 0 for lowercase
+ * Return: number of characters printed
+ */
+int print_hex(unsigned int n, int uppercase)
+{
+	int count = 0;
+	char digit;
+
+	if (n / 16)
+		count += print_hex(n / 16, uppercase);
+
+	if ((n % 16) < 10)
+		digit = (n % 16) + '0';
+	else
+	{
+		if (uppercase)
+			digit = (n % 16) - 10 + 'A';
+		else
+			digit = (n % 16) - 10 + 'a';
+	}
+
 	write(1, &digit, 1);
 	count++;
 
@@ -65,7 +131,6 @@ int _printf(const char *format, ...)
 		return (-1);
 
 	va_start(args, format);
-
 	while (format[i])
 	{
 		if (format[i] == '%')
@@ -111,6 +176,30 @@ int _printf(const char *format, ...)
 				unsigned int num = va_arg(args, unsigned int);
 
 				count += print_binary(num);
+			}
+			else if (format[i] == 'u')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+
+				count += print_unsigned(num);
+			}
+			else if (format[i] == 'o')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+
+				count += print_octal(num);
+			}
+			else if (format[i] == 'x')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+
+				count += print_hex(num, 0);
+			}
+			else if (format[i] == 'X')
+			{
+				unsigned int num = va_arg(args, unsigned int);
+
+				count += print_hex(num, 1);
 			}
 			else
 			{
