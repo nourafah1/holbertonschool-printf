@@ -481,6 +481,161 @@ _printf("%ld", LONG_MIN);    // -9223372036854775808
 ```
 
 ## Testing
+## Testing
+
+### Compile
+
+```bash
+gcc -Wall -Wextra -Werror -pedantic -std=gnu89 *.c -o printf
+```
+
+### Basic Test
+
+Create a test file:
+
+```bash
+nano main_test.c
+```
+
+Paste this:
+
+```c
+#include "main.h"
+#include <stdio.h>
+#include <limits.h>
+
+int main(void)
+{
+    int len1, len2;
+
+    /* Basic specifiers */
+    len1 = _printf("Hello %s!\n", "World");
+    len2 = printf("Hello %s!\n", "World");
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Characters */
+    len1 = _printf("Char: %c\n", 'A');
+    len2 = printf("Char: %c\n", 'A');
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Integers */
+    len1 = _printf("Positive: %d\n", 42);
+    len2 = printf("Positive: %d\n", 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Negative: %d\n", -42);
+    len2 = printf("Negative: %d\n", -42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Zero: %d\n", 0);
+    len2 = printf("Zero: %d\n", 0);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Flags */
+    len1 = _printf("Plus flag: %+d\n", 42);
+    len2 = printf("Plus flag: %+d\n", 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Zero flag: %06d\n", 42);
+    len2 = printf("Zero flag: %06d\n", 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Minus flag: %-6d|\n", 42);
+    len2 = printf("Minus flag: %-6d|\n", 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Hash flag: %#x\n", 255);
+    len2 = printf("Hash flag: %#x\n", 255);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Precision */
+    len1 = _printf("Precision int: %.5d\n", 42);
+    len2 = printf("Precision int: %.5d\n", 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Precision str: %.5s\n", "Hello World");
+    len2 = printf("Precision str: %.5s\n", "Hello World");
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Zero precision: %.0d\n", 0);
+    len2 = printf("Zero precision: %.0d\n", 0);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Width */
+    len1 = _printf("Width: %6d\n", 42);
+    len2 = printf("Width: %6d\n", 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Width str: %10s\n", "Hello");
+    len2 = printf("Width str: %10s\n", "Hello");
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Star width and precision */
+    len1 = _printf("Star width: %*d\n", 6, 42);
+    len2 = printf("Star width: %*d\n", 6, 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Star precision: %.*d\n", 5, 42);
+    len2 = printf("Star precision: %.*d\n", 5, 42);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Length modifiers */
+    len1 = _printf("Long max: %ld\n", LONG_MAX);
+    len2 = printf("Long max: %ld\n", LONG_MAX);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Long min: %ld\n", LONG_MIN);
+    len2 = printf("Long min: %ld\n", LONG_MIN);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    len1 = _printf("Short: %hd\n", SHRT_MAX);
+    len2 = printf("Short: %hd\n", SHRT_MAX);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* Custom specifiers */
+    _printf("Reverse: %r\n", "Hello World");
+    _printf("ROT13: %R\n", "Hello World");
+    _printf("Binary: %b\n", 42);
+
+    /* Percent sign */
+    len1 = _printf("Percent: 100%%\n");
+    len2 = printf("Percent: 100%%\n");
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    /* NULL string */
+    len1 = _printf("Null string: %s\n", (char *)NULL);
+    len2 = printf("Null string: %s\n", (char *)NULL);
+    _printf("_printf: %d | printf: %d\n\n", len1, len2);
+
+    return (0);
+}
+```
+
+Compile and run:
+
+```bash
+gcc -Wall -Wextra -Werror -pedantic -std=gnu89 *.c main_test.c -o test
+./test
+```
+
+### Check Memory Leaks
+
+```bash
+valgrind --leak-check=full ./test
+```
+
+### Check Betty Style
+
+```bash
+betty _printf.c main.h
+```
+
+### Expected Output Example
+/* Basic specifiers */
+len1 = _printf("Hello %s!\n", "World");
+len2 = printf("Hello %s!\n", "World");
+_printf("_printf: %d | printf: %d\n\n", len1, len2);
+
 
 Compile and run:
 
