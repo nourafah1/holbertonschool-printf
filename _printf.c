@@ -11,6 +11,7 @@ int _printf(const char *format, ...)
 	int i = 0, count = 0;
 	int plus_flag, space_flag, hash_flag;
 	int long_mod, short_mod;
+	int width, j;
 	char *str, c;
 	char buffer[1024];
 	int buf_index = 0;
@@ -28,6 +29,7 @@ int _printf(const char *format, ...)
 			hash_flag = 0;
 			long_mod = 0;
 			short_mod = 0;
+			width = 0;
 			i++;
 			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
 			{
@@ -37,6 +39,11 @@ int _printf(const char *format, ...)
 					space_flag = 1;
 				else if (format[i] == '#')
 					hash_flag = 1;
+				i++;
+			}
+			while (format[i] >= '1' && format[i] <= '9')
+			{
+				width = width * 10 + (format[i] - '0');
 				i++;
 			}
 			if (format[i] == 'l')
@@ -57,14 +64,22 @@ int _printf(const char *format, ...)
 			}
 			if (format[i] == 'c')
 			{
+				for (j = 1; j < width; j++)
+					add_to_buffer(buffer, &buf_index, ' ', &count);
 				c = va_arg(args, int);
 				add_to_buffer(buffer, &buf_index, c, &count);
 			}
 			else if (format[i] == 's')
 			{
+				int len = 0;
+
 				str = va_arg(args, char *);
 				if (str == NULL)
 					str = "(null)";
+				while (str[len])
+					len++;
+				for (j = len; j < width; j++)
+					add_to_buffer(buffer, &buf_index, ' ', &count);
 				print_string_buffer(str, buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'S')
@@ -75,18 +90,44 @@ int _printf(const char *format, ...)
 				print_special_string(str, buffer, &buf_index, &count);
 			}
 			else if (format[i] == '%')
+			{
+				for (j = 1; j < width; j++)
+					add_to_buffer(buffer, &buf_index, ' ', &count);
 				add_to_buffer(buffer, &buf_index, '%', &count);
+			}
 			else if (format[i] == 'd' || format[i] == 'i')
 			{
+				long int num;
+				int len = 0;
+				long int tmp;
+
 				if (long_mod)
-					print_signed_modifier(va_arg(args, long int), plus_flag,
-						space_flag, buffer, &buf_index, &count);
+					num = va_arg(args, long int);
 				else if (short_mod)
-					print_signed_modifier((short int)va_arg(args, int),
-						plus_flag, space_flag, buffer, &buf_index, &count);
+					num = (short int)va_arg(args, int);
 				else
-					print_signed_modifier((long int)va_arg(args, int),
-						plus_flag, space_flag, buffer, &buf_index, &count);
+					num = (long int)va_arg(args, int);
+				tmp = (num < 0) ? -num : num;
+				if (num < 0)
+					len++;
+				else if (plus_flag || space_flag)
+					len++;
+				if (tmp == 0)
+					len = 1;
+				else
+				{
+					long int t = tmp;
+
+					while (t > 0)
+					{
+						len++;
+						t /= 10;
+					}
+				}
+				for (j = len; j < width; j++)
+					add_to_buffer(buffer, &buf_index, ' ', &count);
+				print_signed_modifier(num, plus_flag,
+					space_flag, buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'b')
 				print_binary_buffer(va_arg(args, unsigned int),
