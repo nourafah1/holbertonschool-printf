@@ -158,7 +158,170 @@ to stdout when full or when the format string ends.
 | Precision `%.5s` | Maximum characters for strings | `_printf("%.5s", "Hello World")` → `Hello` |
 | Precision `%.*d` | Precision from argument | `_printf("%.*d", 5, 42)` → `00042` |
 ```
-##Example 
+##Example ## Examples
+
+```c
+/* Basic specifiers */
+_printf("Hello %s!\n", "World");
+// Output: Hello World!
+
+_printf("Char: %c\n", 'A');
+// Output: Char: A
+
+_printf("Number: %d\n", 42);
+// Output: Number: 42
+
+_printf("Negative: %d\n", -42);
+// Output: Negative: -42
+
+_printf("Zero: %d\n", 0);
+// Output: Zero: 0
+
+/* Unsigned, Octal, Hex */
+_printf("Unsigned: %u\n", 12345);
+// Output: Unsigned: 12345
+
+_printf("Octal: %o\n", 8);
+// Output: Octal: 10
+
+_printf("Hex lower: %x\n", 255);
+// Output: Hex lower: ff
+
+_printf("Hex upper: %X\n", 255);
+// Output: Hex upper: FF
+
+_printf("Binary: %b\n", 10);
+// Output: Binary: 1010
+
+/* Flags */
+_printf("%+d and %+d\n", 42, -42);
+// Output: +42 and -42
+
+_printf("% d and % d\n", 42, -42);
+// Output:  42 and -42
+
+_printf("%#o\n", 8);
+// Output: 010
+
+_printf("%#x\n", 255);
+// Output: 0xff
+
+_printf("%#X\n", 255);
+// Output: 0XFF
+
+/* Zero flag */
+_printf("%06d\n", 42);
+// Output: 000042
+
+_printf("%06d\n", -42);
+// Output: -00042
+
+_printf("%06x\n", 255);
+// Output: 0000ff
+
+/* Minus flag - left align */
+_printf("%-10s|\n", "Hi");
+// Output: Hi        |
+
+_printf("%-6d|\n", 42);
+// Output: 42    |
+
+_printf("%-6d|\n", -42);
+// Output: -42   |
+
+/* Field width */
+_printf("%6d\n", 42);
+// Output:     42
+
+_printf("%10s\n", "Hello");
+// Output:      Hello
+
+_printf("%6c\n", 'A');
+// Output:      A
+
+/* Precision */
+_printf("%.5d\n", 42);
+// Output: 00042
+
+_printf("%.5d\n", 0);
+// Output: 00000
+
+_printf("%.0d\n", 0);
+// Output: (empty)
+
+_printf("%.5s\n", "Hello World");
+// Output: Hello
+
+_printf("%.3s\n", "Hi");
+// Output: Hi
+
+/* Width and precision combined */
+_printf("%10.5d\n", 42);
+// Output:      00042
+
+_printf("%-10.5d|\n", 42);
+// Output: 00042     |
+
+_printf("%10.5s\n", "Hello World");
+// Output:      Hello
+
+/* Star width and precision */
+_printf("%*d\n", 6, 42);
+// Output:     42
+
+_printf("%.*d\n", 5, 42);
+// Output: 00042
+
+_printf("%*.*s\n", 10, 5, "Hello World");
+// Output:      Hello
+
+/* Length modifiers */
+_printf("%ld\n", 9223372036854775807L);
+// Output: 9223372036854775807
+
+_printf("%ld\n", -9223372036854775808L);
+// Output: -9223372036854775808
+
+_printf("%lu\n", 18446744073709551615UL);
+// Output: 18446744073709551615
+
+_printf("%hd\n", 32767);
+// Output: 32767
+
+_printf("%hu\n", 65535);
+// Output: 65535
+
+/* Custom specifiers */
+_printf("%r\n", "Hello");
+// Output: olleH
+
+_printf("%r\n", "Hello World");
+// Output: dlroW olleH
+
+_printf("%R\n", "Hello");
+// Output: Uryyb
+
+_printf("%R\n", "ABC xyz");
+// Output: NOP klm
+
+_printf("%S\n", "Hello\nWorld");
+// Output: Hello\x0AWorld
+
+/* Percent sign */
+_printf("100%%\n");
+// Output: 100%
+
+/* Multiple specifiers in one line */
+_printf("%s is %d years old\n", "Shahad", 20);
+// Output: Shahad is 20 years old
+
+_printf("%d + %d = %d\n", 10, 20, 30);
+// Output: 10 + 20 = 30
+
+_printf("Hex: %#010x\n", 255);
+// Output: Hex: 0x000000ff
+```
+
 ```c
 _printf("Hello %s!\n", "World");
 // Output: Hello World!
