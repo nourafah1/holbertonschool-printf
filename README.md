@@ -110,7 +110,6 @@ implement core C library functions from scratch to build a strong
 foundation in systems programming.
 
 
-
 ## Requirements
 - GCC compiler
 - Ubuntu 20.04
@@ -123,7 +122,9 @@ foundation in systems programming.
 * Allowed functions: `write`, `malloc`, `free`, `va_start`, `va_end`, `va_arg`, `va_copy`
 * All files compiled with: `-Wall -Wextra -Werror -pedantic -std=gnu89`
 * No use of standard library `printf` or `sprintf`
-* 
+
+
+
 ### General
 * Allowed editors: `vi`, `vim`, `emacs`
 * All files compiled on Ubuntu 20.04 LTS
@@ -528,7 +529,6 @@ _printf("%ld", LONG_MIN);    // -9223372036854775808
 | `main.h` | Header file containing all function prototypes |
 | `print_rot13.c` | Handles `%R` custom specifier — ROT13 encoding |
 | `print_reverse.c` | Handles `%r` custom specifier — reverse string |
-
 
 
 
