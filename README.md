@@ -23,6 +23,61 @@ and print each argument.
 
 ### What makes this project special
 
+### What makes this project special
+
+Unlike the standard `printf`, this implementation uses a local buffer
+of 1024 bytes to store characters before writing them to stdout. This
+approach reduces the number of `write` system calls, which makes the
+function more efficient. The buffer is flushed automatically when it
+becomes full or when the format string ends.
+
+This project goes beyond a basic implementation by supporting a wide
+range of features that mirror the real `printf` behavior, including:
+
+* **Custom buffer system**: Instead of calling `write` for every single
+  character, we store characters in a 1024-byte buffer and flush it
+  all at once. This significantly reduces the number of system calls
+  and improves performance, especially when printing large amounts of text.
+
+* **Full flag support**: We implemented all major flags including `+`,
+  `-`, `0`, `#`, and space. Each flag changes the output format in a
+  specific way, and multiple flags can be combined together in a single
+  specifier like `%-+10d`.
+
+* **Field width and precision**: The function correctly handles field
+  width and precision for all supported specifiers. Width controls the
+  minimum number of characters printed, and precision controls the
+  minimum digits for integers or maximum characters for strings.
+
+* **Dynamic width and precision with `*`**: Instead of hardcoding the
+  width or precision in the format string, the user can pass them as
+  arguments using `%*d` or `%.*d`. The function reads these values
+  from the argument list at runtime.
+
+* **Length modifiers**: The function handles both `l` for long integers
+  and `h` for short integers across all numeric specifiers. This allows
+  correct printing of values like `LONG_MIN`, `LONG_MAX`, `SHRT_MIN`,
+  `SHRT_MAX`, `ULONG_MAX`, and `USHRT_MAX`.
+
+* **Edge case handling**: Special attention was given to tricky cases
+  such as printing `LONG_MIN` (which cannot simply be negated in a
+  `long int`), printing `%.0d` with zero (which should print nothing),
+  null string pointers (printed as `(null)`), and the interaction
+  between `0` flag and precision (precision overrides the `0` flag).
+
+* **Custom specifiers**: Beyond the standard specifiers, we added three
+  custom ones: `%b` for binary output, `%r` for reversed strings, and
+  `%R` for ROT13 encoded strings. These demonstrate how the specifier
+  system can be extended.
+
+* **Betty compliant code**: All code was written following the Betty
+  coding style used at Holberton School. This means clean formatting,
+  proper commenting, limited function length, and no more than 5
+  functions per file.
+
+* **Team collaboration**: This project was built as a two-person team
+  using Git and GitHub for version control. Both members contributed
+  to the implementation, testing, and documentation of the project.
 Unlike the standard `printf`, this implementation uses a local buffer
 of 1024 bytes to store characters before writing them to stdout. This
 approach reduces the number of `write` system calls, which makes the
