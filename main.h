@@ -29,4 +29,5 @@ void print_hex_long_buffer(unsigned long int n, int uppercase, char buffer[],
 void print_signed_modifier(long int n, int plus_flag, int space_flag,
         char buffer[], int *index, int *count);
 void print_reverse_buffer(char *str, char buffer[], int *index, int *count);
+void print_rot13_buffer(char *str, char buffer[], int *index, int *count);
 #endif

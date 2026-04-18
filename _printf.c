@@ -484,6 +484,11 @@ int _printf(const char *format, ...)
 					}
 				}
 			}
+else if (format[i] == 'R')
+{
+    str = va_arg(args, char *);
+    print_rot13_buffer(str, buffer, &buf_index, &count);
+}
 			else if (format[i] == 'p')
 				print_pointer_buffer(va_arg(args, void *),
 					buffer, &buf_index, &count);
