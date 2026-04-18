@@ -11,7 +11,7 @@ int _printf(const char *format, ...)
 	int i = 0, count = 0;
 	int plus_flag, space_flag, hash_flag;
 	int long_mod, short_mod;
-	int width, j;
+	int width, j, precision;
 	char *str, c;
 	char buffer[1024];
 	int buf_index = 0;
@@ -30,6 +30,7 @@ int _printf(const char *format, ...)
 			long_mod = 0;
 			short_mod = 0;
 			width = 0;
+			precision = -1;
 			i++;
 			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
 			{
@@ -41,10 +42,36 @@ int _printf(const char *format, ...)
 					hash_flag = 1;
 				i++;
 			}
-			while (format[i] >= '1' && format[i] <= '9')
+			if (format[i] == '*')
 			{
-				width = width * 10 + (format[i] - '0');
+				width = va_arg(args, int);
 				i++;
+			}
+			else
+			{
+				while (format[i] >= '0' && format[i] <= '9')
+				{
+					width = width * 10 + (format[i] - '0');
+					i++;
+				}
+			}
+			if (format[i] == '.')
+			{
+				i++;
+				if (format[i] == '*')
+				{
+					precision = va_arg(args, int);
+					i++;
+				}
+				else
+				{
+					precision = 0;
+					while (format[i] >= '0' && format[i] <= '9')
+					{
+						precision = precision * 10 + (format[i] - '0');
+						i++;
+					}
+				}
 			}
 			if (format[i] == 'l')
 			{
@@ -72,15 +99,21 @@ int _printf(const char *format, ...)
 			else if (format[i] == 's')
 			{
 				int len = 0;
+				int print_len;
 
 				str = va_arg(args, char *);
 				if (str == NULL)
 					str = "(null)";
 				while (str[len])
 					len++;
-				for (j = len; j < width; j++)
+				if (precision >= 0 && precision < len)
+					print_len = precision;
+				else
+					print_len = len;
+				for (j = print_len; j < width; j++)
 					add_to_buffer(buffer, &buf_index, ' ', &count);
-				print_string_buffer(str, buffer, &buf_index, &count);
+				for (j = 0; j < print_len; j++)
+					add_to_buffer(buffer, &buf_index, str[j], &count);
 			}
 			else if (format[i] == 'S')
 			{
@@ -99,6 +132,7 @@ int _printf(const char *format, ...)
 			{
 				long int num;
 				int len = 0;
+				int zero_pad = 0;
 				long int tmp;
 
 				if (long_mod)
@@ -108,41 +142,92 @@ int _printf(const char *format, ...)
 				else
 					num = (long int)va_arg(args, int);
 				tmp = (num < 0) ? -num : num;
-				if (num < 0)
-					len++;
-				else if (plus_flag || space_flag)
-					len++;
-				if (tmp == 0)
-					len = 1;
+				if (tmp == 0 && precision == 0)
+				{
+					for (j = 0; j < width; j++)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+				}
 				else
 				{
-					long int t = tmp;
-
-					while (t > 0)
+					if (tmp == 0)
+						len = 1;
+					else
 					{
-						len++;
-						t /= 10;
+						long int t = tmp;
+
+						while (t > 0)
+						{
+							len++;
+							t /= 10;
+						}
 					}
+					if (num < 0)
+						len++;
+					else if (plus_flag || space_flag)
+						len++;
+					if (precision > len - (num < 0 ? 1 : (plus_flag || space_flag ? 1 : 0)))
+						zero_pad = precision - (len - (num < 0 ? 1 : (plus_flag || space_flag ? 1 : 0)));
+					for (j = len + zero_pad; j < width; j++)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+					if (num < 0)
+						add_to_buffer(buffer, &buf_index, '-', &count);
+					else if (plus_flag)
+						add_to_buffer(buffer, &buf_index, '+', &count);
+					else if (space_flag)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+					for (j = 0; j < zero_pad; j++)
+						add_to_buffer(buffer, &buf_index, '0', &count);
+					print_number_buffer(tmp, buffer, &buf_index, &count);
 				}
-				for (j = len; j < width; j++)
-					add_to_buffer(buffer, &buf_index, ' ', &count);
-				print_signed_modifier(num, plus_flag,
-					space_flag, buffer, &buf_index, &count);
 			}
 			else if (format[i] == 'b')
 				print_binary_buffer(va_arg(args, unsigned int),
 					buffer, &buf_index, &count);
 			else if (format[i] == 'u')
 			{
+				unsigned long int unum;
+				int ulen = 0;
+				int uzero_pad = 0;
+				unsigned long int utmp;
+
 				if (long_mod)
-					print_unsigned_long_buffer(va_arg(args, unsigned long int),
-						buffer, &buf_index, &count);
+					unum = va_arg(args, unsigned long int);
 				else if (short_mod)
-					print_unsigned_buffer((unsigned short int)
-						va_arg(args, unsigned int), buffer, &buf_index, &count);
+					unum = (unsigned short int)va_arg(args, unsigned int);
 				else
-					print_unsigned_buffer(va_arg(args, unsigned int),
-						buffer, &buf_index, &count);
+					unum = va_arg(args, unsigned int);
+				if (unum == 0 && precision == 0)
+				{
+					for (j = 0; j < width; j++)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+				}
+				else
+				{
+					utmp = unum;
+					if (utmp == 0)
+						ulen = 1;
+					else
+						while (utmp > 0)
+						{
+							ulen++;
+							utmp /= 10;
+						}
+					if (precision > ulen)
+						uzero_pad = precision - ulen;
+					for (j = ulen + uzero_pad; j < width; j++)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+					for (j = 0; j < uzero_pad; j++)
+						add_to_buffer(buffer, &buf_index, '0', &count);
+					if (long_mod)
+						print_unsigned_long_buffer(unum,
+							buffer, &buf_index, &count);
+					else if (short_mod)
+						print_unsigned_buffer((unsigned short int)unum,
+							buffer, &buf_index, &count);
+					else
+						print_unsigned_buffer((unsigned int)unum,
+							buffer, &buf_index, &count);
+				}
 			}
 			else if (format[i] == 'o')
 			{
