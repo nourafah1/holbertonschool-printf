@@ -2,6 +2,26 @@
 #include <stdarg.h>
 
 /**
+ * get_uint_len - returns digit count in given base
+ * @n: the number
+ * @base: the base
+ * Return: digit count
+ */
+static int get_uint_len(unsigned long int n, int base)
+{
+	int len = 0;
+
+	if (n == 0)
+		return (1);
+	while (n > 0)
+	{
+		len++;
+		n /= base;
+	}
+	return (len);
+}
+
+/**
  * _printf - prints formatted output using a local buffer
  * @format: format string
  * Return: number of characters printed
@@ -9,7 +29,7 @@
 int _printf(const char *format, ...)
 {
 	int i = 0, count = 0;
-	int plus_flag, space_flag, hash_flag;
+	int plus_flag, space_flag, hash_flag, zero_flag;
 	int long_mod, short_mod;
 	int width, j, precision;
 	char *str, c;
@@ -27,12 +47,14 @@ int _printf(const char *format, ...)
 			plus_flag = 0;
 			space_flag = 0;
 			hash_flag = 0;
+			zero_flag = 0;
 			long_mod = 0;
 			short_mod = 0;
 			width = 0;
 			precision = -1;
 			i++;
-			while (format[i] == '+' || format[i] == ' ' || format[i] == '#')
+			while (format[i] == '+' || format[i] == ' ' ||
+				format[i] == '#' || format[i] == '0')
 			{
 				if (format[i] == '+')
 					plus_flag = 1;
@@ -40,6 +62,8 @@ int _printf(const char *format, ...)
 					space_flag = 1;
 				else if (format[i] == '#')
 					hash_flag = 1;
+				else if (format[i] == '0')
+					zero_flag = 1;
 				i++;
 			}
 			if (format[i] == '*')
@@ -49,7 +73,7 @@ int _printf(const char *format, ...)
 			}
 			else
 			{
-				while (format[i] >= '0' && format[i] <= '9')
+				while (format[i] >= '1' && format[i] <= '9')
 				{
 					width = width * 10 + (format[i] - '0');
 					i++;
@@ -58,6 +82,7 @@ int _printf(const char *format, ...)
 			if (format[i] == '.')
 			{
 				i++;
+				zero_flag = 0;
 				if (format[i] == '*')
 				{
 					precision = va_arg(args, int);
@@ -131,9 +156,11 @@ int _printf(const char *format, ...)
 			else if (format[i] == 'd' || format[i] == 'i')
 			{
 				long int num;
-				int len = 0;
+				int digits = 0;
 				int zero_pad = 0;
+				int pad_total;
 				long int tmp;
+				char pad_char = zero_flag ? '0' : ' ';
 
 				if (long_mod)
 					num = va_arg(args, long int);
@@ -142,7 +169,7 @@ int _printf(const char *format, ...)
 				else
 					num = (long int)va_arg(args, int);
 				tmp = (num < 0) ? -num : num;
-				if (tmp == 0 && precision == 0)
+				if (num == 0 && precision == 0)
 				{
 					for (j = 0; j < width; j++)
 						add_to_buffer(buffer, &buf_index, ' ', &count);
@@ -150,31 +177,44 @@ int _printf(const char *format, ...)
 				else
 				{
 					if (tmp == 0)
-						len = 1;
+						digits = 1;
 					else
 					{
 						long int t = tmp;
 
 						while (t > 0)
 						{
-							len++;
+							digits++;
 							t /= 10;
 						}
 					}
-					if (num < 0)
-						len++;
-					else if (plus_flag || space_flag)
-						len++;
-					if (precision > len - (num < 0 ? 1 : (plus_flag || space_flag ? 1 : 0)))
-						zero_pad = precision - (len - (num < 0 ? 1 : (plus_flag || space_flag ? 1 : 0)));
-					for (j = len + zero_pad; j < width; j++)
-						add_to_buffer(buffer, &buf_index, ' ', &count);
-					if (num < 0)
-						add_to_buffer(buffer, &buf_index, '-', &count);
-					else if (plus_flag)
-						add_to_buffer(buffer, &buf_index, '+', &count);
-					else if (space_flag)
-						add_to_buffer(buffer, &buf_index, ' ', &count);
+					if (precision > digits)
+						zero_pad = precision - digits;
+					pad_total = digits + zero_pad;
+					if (num < 0 || plus_flag || space_flag)
+						pad_total++;
+					if (zero_flag && precision == -1)
+					{
+						if (num < 0)
+							add_to_buffer(buffer, &buf_index, '-', &count);
+						else if (plus_flag)
+							add_to_buffer(buffer, &buf_index, '+', &count);
+						else if (space_flag)
+							add_to_buffer(buffer, &buf_index, ' ', &count);
+						for (j = pad_total; j < width; j++)
+							add_to_buffer(buffer, &buf_index, '0', &count);
+					}
+					else
+					{
+						for (j = pad_total; j < width; j++)
+							add_to_buffer(buffer, &buf_index, pad_char, &count);
+						if (num < 0)
+							add_to_buffer(buffer, &buf_index, '-', &count);
+						else if (plus_flag)
+							add_to_buffer(buffer, &buf_index, '+', &count);
+						else if (space_flag)
+							add_to_buffer(buffer, &buf_index, ' ', &count);
+					}
 					for (j = 0; j < zero_pad; j++)
 						add_to_buffer(buffer, &buf_index, '0', &count);
 					print_number_buffer(tmp, buffer, &buf_index, &count);
@@ -186,9 +226,10 @@ int _printf(const char *format, ...)
 			else if (format[i] == 'u')
 			{
 				unsigned long int unum;
-				int ulen = 0;
+				int udigits = 0;
 				int uzero_pad = 0;
-				unsigned long int utmp;
+				int upad_total;
+				char upad_char = zero_flag ? '0' : ' ';
 
 				if (long_mod)
 					unum = va_arg(args, unsigned long int);
@@ -203,19 +244,12 @@ int _printf(const char *format, ...)
 				}
 				else
 				{
-					utmp = unum;
-					if (utmp == 0)
-						ulen = 1;
-					else
-						while (utmp > 0)
-						{
-							ulen++;
-							utmp /= 10;
-						}
-					if (precision > ulen)
-						uzero_pad = precision - ulen;
-					for (j = ulen + uzero_pad; j < width; j++)
-						add_to_buffer(buffer, &buf_index, ' ', &count);
+					udigits = get_uint_len(unum, 10);
+					if (precision > udigits)
+						uzero_pad = precision - udigits;
+					upad_total = udigits + uzero_pad;
+					for (j = upad_total; j < width; j++)
+						add_to_buffer(buffer, &buf_index, upad_char, &count);
 					for (j = 0; j < uzero_pad; j++)
 						add_to_buffer(buffer, &buf_index, '0', &count);
 					if (long_mod)
@@ -231,63 +265,107 @@ int _printf(const char *format, ...)
 			}
 			else if (format[i] == 'o')
 			{
-				if (long_mod)
-				{
-					unsigned long int n = va_arg(args, unsigned long int);
+				unsigned long int onum;
+				int odigits = 0;
+				int ozero_pad = 0;
+				int opad_total;
+				char opad_char = zero_flag ? '0' : ' ';
 
-					if (hash_flag && n != 0)
-						add_to_buffer(buffer, &buf_index, '0', &count);
-					print_octal_long_buffer(n, buffer, &buf_index, &count);
-				}
+				if (long_mod)
+					onum = va_arg(args, unsigned long int);
 				else if (short_mod)
-					print_hash_octal((unsigned short int)
-						va_arg(args, unsigned int), hash_flag,
-						buffer, &buf_index, &count);
+					onum = (unsigned short int)va_arg(args, unsigned int);
 				else
-					print_hash_octal(va_arg(args, unsigned int), hash_flag,
-						buffer, &buf_index, &count);
+					onum = va_arg(args, unsigned int);
+				if (onum == 0 && precision == 0)
+				{
+					for (j = 0; j < width; j++)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+				}
+				else
+				{
+					odigits = get_uint_len(onum, 8);
+					if (precision > odigits)
+						ozero_pad = precision - odigits;
+					if (hash_flag && onum != 0)
+						ozero_pad++;
+					opad_total = odigits + ozero_pad;
+					for (j = opad_total; j < width; j++)
+						add_to_buffer(buffer, &buf_index, opad_char, &count);
+					for (j = 0; j < ozero_pad; j++)
+						add_to_buffer(buffer, &buf_index, '0', &count);
+					if (long_mod)
+						print_octal_long_buffer(onum, buffer, &buf_index, &count);
+					else if (short_mod)
+						print_octal_buffer((unsigned short int)onum,
+							buffer, &buf_index, &count);
+					else
+						print_octal_buffer((unsigned int)onum,
+							buffer, &buf_index, &count);
+				}
 			}
-			else if (format[i] == 'x')
+			else if (format[i] == 'x' || format[i] == 'X')
 			{
-				if (long_mod)
-				{
-					unsigned long int n = va_arg(args, unsigned long int);
+				unsigned long int xnum;
+				int xdigits = 0;
+				int xzero_pad = 0;
+				int xpad_total;
+				int uppercase = (format[i] == 'X');
+				char xpad_char = zero_flag ? '0' : ' ';
 
-					if (hash_flag && n != 0)
-					{
-						add_to_buffer(buffer, &buf_index, '0', &count);
-						add_to_buffer(buffer, &buf_index, 'x', &count);
-					}
-					print_hex_long_buffer(n, 0, buffer, &buf_index, &count);
-				}
-				else if (short_mod)
-					print_hash_hex((unsigned short int)
-						va_arg(args, unsigned int), hash_flag, 0,
-						buffer, &buf_index, &count);
-				else
-					print_hash_hex(va_arg(args, unsigned int), hash_flag, 0,
-						buffer, &buf_index, &count);
-			}
-			else if (format[i] == 'X')
-			{
 				if (long_mod)
-				{
-					unsigned long int n = va_arg(args, unsigned long int);
-
-					if (hash_flag && n != 0)
-					{
-						add_to_buffer(buffer, &buf_index, '0', &count);
-						add_to_buffer(buffer, &buf_index, 'X', &count);
-					}
-					print_hex_long_buffer(n, 1, buffer, &buf_index, &count);
-				}
+					xnum = va_arg(args, unsigned long int);
 				else if (short_mod)
-					print_hash_hex((unsigned short int)
-						va_arg(args, unsigned int), hash_flag, 1,
-						buffer, &buf_index, &count);
+					xnum = (unsigned short int)va_arg(args, unsigned int);
 				else
-					print_hash_hex(va_arg(args, unsigned int), hash_flag, 1,
-						buffer, &buf_index, &count);
+					xnum = va_arg(args, unsigned int);
+				if (xnum == 0 && precision == 0)
+				{
+					for (j = 0; j < width; j++)
+						add_to_buffer(buffer, &buf_index, ' ', &count);
+				}
+				else
+				{
+					xdigits = get_uint_len(xnum, 16);
+					if (precision > xdigits)
+						xzero_pad = precision - xdigits;
+					xpad_total = xdigits + xzero_pad;
+					if (hash_flag && xnum != 0)
+						xpad_total += 2;
+					if (zero_flag && precision == -1)
+					{
+						if (hash_flag && xnum != 0)
+						{
+							add_to_buffer(buffer, &buf_index, '0', &count);
+							add_to_buffer(buffer, &buf_index,
+								uppercase ? 'X' : 'x', &count);
+						}
+						for (j = xpad_total; j < width; j++)
+							add_to_buffer(buffer, &buf_index, '0', &count);
+					}
+					else
+					{
+						for (j = xpad_total; j < width; j++)
+							add_to_buffer(buffer, &buf_index, xpad_char, &count);
+						if (hash_flag && xnum != 0)
+						{
+							add_to_buffer(buffer, &buf_index, '0', &count);
+							add_to_buffer(buffer, &buf_index,
+								uppercase ? 'X' : 'x', &count);
+						}
+					}
+					for (j = 0; j < xzero_pad; j++)
+						add_to_buffer(buffer, &buf_index, '0', &count);
+					if (long_mod)
+						print_hex_long_buffer(xnum, uppercase,
+							buffer, &buf_index, &count);
+					else if (short_mod)
+						print_hash_hex((unsigned short int)xnum,
+							0, uppercase, buffer, &buf_index, &count);
+					else
+						print_hash_hex((unsigned int)xnum,
+							0, uppercase, buffer, &buf_index, &count);
+				}
 			}
 			else if (format[i] == 'p')
 				print_pointer_buffer(va_arg(args, void *),
