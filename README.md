@@ -24,6 +24,51 @@ buffer for efficiency.
 * All files compiled with: `-Wall -Wextra -Werror -pedantic -std=gnu89`
 * No use of standard library `printf` or `sprintf`
 * 
+### General
+* Allowed editors: `vi`, `vim`, `emacs`
+* All files compiled on Ubuntu 20.04 LTS
+* Compiled with: `gcc -Wall -Werror -Wextra -pedantic -std=gnu89`
+* All files must end with a new line
+* No more than 5 functions per file
+* Code must follow Betty style
+* Global variables are not allowed
+
+### Header File
+* All prototypes must be in `main.h`
+* Header file must be include guarded
+
+### Functions
+* No use of standard library `printf` or `sprintf`
+* Allowed functions and system calls:
+  * `write` (unistd.h)
+  * `malloc` (stdlib.h)
+  * `free` (stdlib.h)
+  * `va_start` (stdarg.h)
+  * `va_end` (stdarg.h)
+  * `va_arg` (stdarg.h)
+  * `va_copy` (stdarg.h)
+
+### Betty Style
+* All code must pass Betty linter
+* Run Betty check:
+
+```bash
+betty _printf.c main.h
+```
+
+### GitHub
+* One project repository per group
+* No cloning or forking of another student's repository
+* Each team member must commit and push regularly
+
+### Memory
+* No memory leaks allowed
+* All dynamically allocated memory must be freed
+* Check with valgrind:
+
+```bash
+valgrind --leak-check=full ./printf
+```
 
 
 ## Installation
