@@ -23,7 +23,6 @@ and print each argument.
 
 ### What makes this project special
 
-### What makes this project special
 
 Unlike the standard `printf`, this implementation uses a local buffer
 of 1024 bytes to store characters before writing them to stdout. This
