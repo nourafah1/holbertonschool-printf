@@ -7,7 +7,53 @@ as part of the Holberton School curriculum. It replicates the behavior
 of the standard `printf` function by handling formatted output with
 various conversion specifiers, flags, field width, precision, and
 length modifiers. The function writes output to stdout using a local
-buffer for efficiency.
+buffer for efficiency.## Description
+
+This project is a custom implementation of the `printf` function in C
+as part of the Holberton School curriculum. The goal is to deeply
+understand how formatted output works in C by building it from scratch
+without using the standard library `printf` or `sprintf`.
+
+The function `_printf` works similarly to the original `printf` in C.
+It takes a format string and a variable number of arguments, then
+produces output to stdout based on the format string. The format string
+can contain regular characters, which are printed as-is, and conversion
+specifiers that start with `%`, which tell the function how to format
+and print each argument.
+
+### What makes this project special
+
+Unlike the standard `printf`, this implementation uses a local buffer
+of 1024 bytes to store characters before writing them to stdout. This
+approach reduces the number of `write` system calls, which makes the
+function more efficient. The buffer is flushed automatically when it
+becomes full or when the format string ends.
+
+### What we learned
+
+By building this project, we gained a deep understanding of:
+
+* How variadic functions work in C using `va_list`, `va_start`,
+  `va_arg`, `va_copy`, and `va_end`
+* How to parse a format string character by character
+* How flags, field width, precision, and length modifiers interact
+  with each other
+* How to handle edge cases like `LONG_MIN`, null pointers,
+  zero precision, and special characters
+* How to write clean, readable, and Betty-compliant C code
+* How to collaborate as a team using Git and GitHub
+
+### Background
+
+The `printf` function is one of the most used functions in C. It was
+originally written by Dennis Ritchie and Brian Kernighan as part of
+the Unix operating system. Understanding how it works internally is
+an important step in becoming a strong systems programmer.
+
+This project was completed as part of the low-level programming
+curriculum at Holberton School, where students are challenged to
+implement core C library functions from scratch to build a strong
+foundation in systems programming.
 
 
 
